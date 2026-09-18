@@ -35,7 +35,7 @@ export function DriverToday() {
               area={order.address?.addressText || 'Address unavailable'}
               quantityLabel={`${order.items?.reduce((sum, item) => sum + item.quantity, 0) || 0} containers`}
               paymentLabel={order.paymentMethod ? `${order.paymentMethod} · ${order.paymentStatus}` : order.paymentStatus}
-              statusLabel={order.status.replaceAll('_', ' ')}
+              statusLabel={order.status.split('_').join(' ')}
             />
           ))}
         </div>
