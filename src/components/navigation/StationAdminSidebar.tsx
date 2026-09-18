@@ -28,7 +28,7 @@ export const StationAdminSidebar: React.FC = () => {
             key={item.path}
             to={item.path}
             end={item.end}
-            className={({ isActive }) =>
+            className={({ isActive }: { isActive: boolean }) =>
               `flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors cursor-pointer ${
                 isActive
                   ? 'bg-cyan-500/10 text-cyan-400 font-semibold border border-cyan-500/20'

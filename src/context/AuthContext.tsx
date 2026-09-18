@@ -59,7 +59,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   useEffect(() => {
-    if (env.isSupabaseConfigured) {
+    if (env.isSupabaseConfigured && supabase) {
       // Check active Supabase session
       supabase.auth.getSession().then(({ data: { session } }) => {
         if (session?.user) {
@@ -111,7 +111,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const logout = async () => {
-    if (env.isSupabaseConfigured) {
+    if (env.isSupabaseConfigured && supabase) {
       await supabase.auth.signOut();
     }
     setUser(null);

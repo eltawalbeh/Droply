@@ -20,7 +20,7 @@ export const DriverNav: React.FC = () => {
             key={item.path}
             to={item.path}
             end={item.end}
-            className={({ isActive }) =>
+            className={({ isActive }: { isActive: boolean }) =>
               `flex flex-col items-center gap-1 py-1 px-3 rounded-xl transition-colors cursor-pointer ${
                 isActive ? 'text-cyan-400 font-semibold' : 'text-slate-400 hover:text-slate-200'
               }`

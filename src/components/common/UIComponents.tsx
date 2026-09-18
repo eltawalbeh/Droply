@@ -47,9 +47,10 @@ export const Card: React.FC<{ children: React.ReactNode; className?: string }> =
   );
 };
 
-export const Badge: React.FC<{ children: React.ReactNode; variant?: 'info' | 'success' | 'warning' | 'error' | 'neutral' }> = ({
+export const Badge: React.FC<{ children: React.ReactNode; variant?: 'info' | 'success' | 'warning' | 'error' | 'neutral'; className?: string }> = ({
   children,
   variant = 'neutral',
+  className = '',
 }) => {
   const variantStyles = {
     info: 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20',
@@ -60,7 +61,7 @@ export const Badge: React.FC<{ children: React.ReactNode; variant?: 'info' | 'su
   };
 
   return (
-    <span className={`inline-flex items-center px-2.5 py-0.5 text-xs font-medium rounded-full border ${variantStyles[variant]}`}>
+    <span className={`inline-flex items-center px-2.5 py-0.5 text-xs font-medium rounded-full border ${variantStyles[variant]} ${className}`}>
       {children}
     </span>
   );
