@@ -1,6 +1,22 @@
 import type { Language } from '../types'
 
-export const translations: Record<Language, Record<string, string>> = {
+export interface AppTranslation {
+  appName: string
+  appTagline: string
+  dashboard: string
+  orders: string
+  customers: string
+  drivers: string
+  serviceAreas: string
+  locations: string
+  qrCodes: string
+  payments: string
+  reports: string
+  settings: string
+  stationStaff: string
+}
+
+export const translations: Record<Language, AppTranslation> = {
   en: {
     appName: 'Droply',
     appTagline: 'Water ordering made simple',
