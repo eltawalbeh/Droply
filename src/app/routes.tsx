@@ -1,18 +1,26 @@
 import { createBrowserRouter, Navigate } from 'react-router'
 import { CustomerLayout } from '../components/layouts/CustomerLayout'
 import { DashboardLayout } from '../components/layouts/DashboardLayout'
+import { DriverLayout } from '../components/layouts/DriverLayout'
 import { QRLanding } from '../pages/customer/QRLanding'
 import { CustomerRegister } from '../pages/customer/Register'
 import { CustomerContainers } from '../pages/customer/Containers'
 import { CustomerHome } from '../pages/customer/Home'
 import { CustomerOrders } from '../pages/customer/Orders'
 import { CustomerProfile } from '../pages/customer/Profile'
+import { DriverToday } from '../pages/driver/Today'
+import { DriverActive } from '../pages/driver/Active'
+import { DriverCompleted } from '../pages/driver/Completed'
+import { DriverOrderDetails } from '../pages/driver/OrderDetails'
+import { CompleteDelivery } from '../pages/driver/CompleteDelivery'
+import { DriverProfile } from '../pages/driver/Profile'
 import { StationDashboard } from '../pages/station-admin/Dashboard'
 import { ResourcePage } from '../pages/station-admin/ResourcePage'
 import { StationSettingsPage } from '../pages/station-admin/Settings'
 
 export const router = createBrowserRouter([
   { path: '/', element: <Navigate to="/customer" replace /> },
+
   { path: '/join/:code', element: <QRLanding /> },
   { path: '/customer/register', element: <CustomerRegister /> },
   { path: '/customer/containers', element: <CustomerContainers /> },
@@ -25,6 +33,20 @@ export const router = createBrowserRouter([
       { path: 'profile', element: <CustomerProfile /> },
     ],
   },
+
+  {
+    path: '/driver',
+    element: <DriverLayout />,
+    children: [
+      { index: true, element: <DriverToday /> },
+      { path: 'active', element: <DriverActive /> },
+      { path: 'completed', element: <DriverCompleted /> },
+      { path: 'profile', element: <DriverProfile /> },
+      { path: 'orders/:orderId', element: <DriverOrderDetails /> },
+      { path: 'orders/:orderId/complete', element: <CompleteDelivery /> },
+    ],
+  },
+
   {
     path: '/station-admin',
     element: <DashboardLayout />,
@@ -65,5 +87,6 @@ export const router = createBrowserRouter([
       { path: 'settings', element: <StationSettingsPage /> },
     ],
   },
+
   { path: '*', element: <Navigate to="/customer" replace /> },
 ])
