@@ -1,0 +1,10 @@
+{
+  "description": "This multi-tenant water delivery platform streamlines ordering for customers, drivers, and admins, providing a responsive interface and efficient management tools.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}
