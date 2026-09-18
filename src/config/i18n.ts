@@ -8,6 +8,7 @@ export interface AppTranslation {
     driver: string;
     station_admin: string;
     platform_admin: string;
+    station_staff: string;
   };
   common: {
     language: string;
@@ -73,6 +74,7 @@ export const translations: Record<Language, AppTranslation> = {
       driver: 'Delivery Driver',
       station_admin: 'Water Station Admin',
       platform_admin: 'Platform Admin',
+      station_staff: 'Station Staff',
     },
     common: {
       language: 'Language',
@@ -136,6 +138,7 @@ export const translations: Record<Language, AppTranslation> = {
       driver: 'سائق التوصيل',
       station_admin: 'مدير محطة المياه',
       platform_admin: 'مدير المنصة',
+      station_staff: 'موظف المحطة',
     },
     common: {
       language: 'اللغة',

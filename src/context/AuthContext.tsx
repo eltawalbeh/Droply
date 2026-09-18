@@ -49,6 +49,15 @@ const DEFAULT_PROFILES: Record<UserRole, UserProfile> = {
     role: 'platform_admin',
     createdAt: '2025-01-01',
   },
+  station_staff: {
+    id: 'usr-staff-01',
+    email: 'staff@safeerwater.demo',
+    fullName: 'Ahmad Al-Staff',
+    phone: '+966 54 333 9999',
+    role: 'station_staff',
+    tenantId: 'station-001',
+    createdAt: '2025-01-12',
+  },
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -60,10 +69,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   useEffect(() => {
     if (env.isSupabaseConfigured && supabase) {
-      // Check active Supabase session
       supabase.auth.getSession().then(({ data: { session } }) => {
         if (session?.user) {
-          // If live session exists, extract role from user_metadata or fallback
           const userRole = (session.user.user_metadata?.role as UserRole) || 'customer';
           setRoleState(userRole);
           setUser({
@@ -98,14 +105,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const setRole = (newRole: UserRole) => {
     setRoleState(newRole);
-    setUser(DEFAULT_PROFILES[newRole]);
+    setUser(DEFAULT_PROFILES[newRole] || DEFAULT_PROFILES['customer']);
   };
 
   const loginDemo = (selectedRole: UserRole) => {
     setIsLoading(true);
     setTimeout(() => {
       setRoleState(selectedRole);
-      setUser(DEFAULT_PROFILES[selectedRole]);
+      setUser(DEFAULT_PROFILES[selectedRole] || DEFAULT_PROFILES['customer']);
       setIsLoading(false);
     }, 300);
   };

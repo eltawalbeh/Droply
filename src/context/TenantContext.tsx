@@ -48,9 +48,11 @@ export const MOCK_TENANTS: WaterStationTenant[] = [
 
 interface TenantContextType {
   activeTenant: WaterStationTenant | null;
+  activeStation: WaterStationTenant | null;
   tenants: WaterStationTenant[];
   setActiveTenantId: (tenantId: string) => void;
   isLoadingTenants: boolean;
+  isLoading: boolean;
 }
 
 const TenantContext = createContext<TenantContextType | undefined>(undefined);
@@ -69,9 +71,11 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     <TenantContext.Provider
       value={{
         activeTenant,
+        activeStation: activeTenant,
         tenants,
         setActiveTenantId,
         isLoadingTenants: false,
+        isLoading: false,
       }}
     >
       {children}

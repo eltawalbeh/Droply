@@ -1,4 +1,9 @@
-export type UserRole = 'customer' | 'driver' | 'station_admin' | 'platform_admin';
+export type UserRole =
+  | 'customer'
+  | 'driver'
+  | 'station_admin'
+  | 'platform_admin'
+  | 'station_staff';
 
 export type Language = 'en' | 'ar';
 export type Direction = 'ltr' | 'rtl';
@@ -9,7 +14,7 @@ export interface UserProfile {
   fullName: string;
   phone?: string;
   role: UserRole;
-  tenantId?: string; // Station ID for Station Admins / Drivers / Customers associated with a station
+  tenantId?: string;
   avatarUrl?: string;
   createdAt: string;
 }
@@ -46,7 +51,10 @@ export type OrderStatus =
   | 'preparing'
   | 'out_for_delivery'
   | 'delivered'
-  | 'cancelled';
+  | 'cancelled'
+  | 'new'
+  | 'accepted'
+  | 'closed';
 
 export interface WaterOrder {
   id: string;
@@ -59,3 +67,6 @@ export interface WaterOrder {
   itemsCount: number;
   createdAt: string;
 }
+
+// Domain aliases for compatibility
+export type Station = WaterStationTenant;
