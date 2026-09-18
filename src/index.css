@@ -8,12 +8,13 @@
   text-rendering: optimizeLegibility;
 }
 
-* { box-sizing: border-box; }
+* {
+  box-sizing: border-box;
+}
 
 html,
 body,
 #root {
-  min-width: 1180px;
   min-height: 100%;
   margin: 0;
 }
@@ -30,6 +31,20 @@ select {
   font: inherit;
 }
 
+button {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
 a {
   color: inherit;
+  text-decoration: none;
+}
+
+:focus-visible {
+  outline: 2px solid #0f172a;
+  outline-offset: 2px;
 }

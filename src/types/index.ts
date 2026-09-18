@@ -1,72 +1,130 @@
 export type UserRole =
-  | 'customer'
-  | 'driver'
-  | 'station_admin'
   | 'platform_admin'
-  | 'station_staff';
+  | 'station_admin'
+  | 'station_staff'
+  | 'driver'
+  | 'customer'
 
-export type Language = 'en' | 'ar';
-export type Direction = 'ltr' | 'rtl';
+export type Language = 'en' | 'ar'
+export type Direction = 'ltr' | 'rtl'
 
-export interface UserProfile {
-  id: string;
-  email: string;
-  fullName: string;
-  phone?: string;
-  role: UserRole;
-  tenantId?: string;
-  avatarUrl?: string;
-  createdAt: string;
-}
-
-export interface WaterStationTenant {
-  id: string;
-  nameEn: string;
-  nameAr: string;
-  code: string;
-  logoUrl?: string;
-  isVerified: boolean;
-  isActive: boolean;
-  currency: string;
-  contactPhone: string;
-  addressEn?: string;
-  addressAr?: string;
-  createdAt: string;
-}
-
-export interface WaterProduct {
-  id: string;
-  tenantId: string;
-  titleEn: string;
-  titleAr: string;
-  sizeLiters: number;
-  price: number;
-  imageUrl?: string;
-  isAvailable: boolean;
-}
-
-export type OrderStatus = 
-  | 'pending'
-  | 'confirmed'
-  | 'preparing'
-  | 'out_for_delivery'
-  | 'delivered'
-  | 'cancelled'
+export type OrderStatus =
   | 'new'
   | 'accepted'
-  | 'closed';
+  | 'out_for_delivery'
+  | 'delivered'
+  | 'closed'
+  | 'cancelled'
 
-export interface WaterOrder {
-  id: string;
-  tenantId: string;
-  customerId: string;
-  driverId?: string;
-  status: OrderStatus;
-  totalAmount: number;
-  deliveryAddress: string;
-  itemsCount: number;
-  createdAt: string;
+export type PaymentMethod = 'cash' | 'cliq' | 'coupon'
+export type PaymentStatus = 'pending' | 'paid'
+
+export interface UserProfile {
+  id: string
+  fullName: string
+  role: UserRole
+  phone?: string | null
+  email?: string | null
+  stationId?: string | null
+  createdAt?: string
 }
 
-// Domain aliases for compatibility
-export type Station = WaterStationTenant;
+export interface Station {
+  id: string
+  name: string
+  nameAr?: string | null
+  slug?: string | null
+  logoUrl?: string | null
+  brandColor?: string | null
+  currency: 'JOD'
+  phone?: string | null
+  isActive: boolean
+}
+
+export interface StationLocation {
+  id: string
+  stationId: string
+  name: string
+  phone?: string | null
+  addressText?: string | null
+  cliqAlias?: string | null
+  isActive: boolean
+}
+
+export interface ServiceArea {
+  id: string
+  stationLocationId: string
+  name: string
+  driverId?: string | null
+  isActive: boolean
+}
+
+export interface Customer {
+  id: string
+  stationId: string
+  name: string
+  phone: string
+  isActive: boolean
+}
+
+export interface CustomerAddress {
+  id: string
+  customerId: string
+  serviceAreaId?: string | null
+  label: string
+  addressText: string
+  latitude?: number | null
+  longitude?: number | null
+  notes?: string | null
+  isDefault: boolean
+}
+
+export interface ContainerType {
+  id: string
+  stationId: string
+  name: string
+  sizeLiters?: number | null
+  price: number
+  isActive: boolean
+}
+
+export interface CustomerContainer {
+  id: string
+  customerId: string
+  containerTypeId: string
+  quantity: number
+}
+
+export interface Order {
+  id: string
+  stationId: string
+  stationLocationId: string
+  customerId: string
+  customerAddressId: string
+  driverId?: string | null
+  status: OrderStatus
+  totalAmount: number
+  paymentMethod?: PaymentMethod | null
+  paymentStatus: PaymentStatus
+  createdAt: string
+}
+
+export interface OrderItem {
+  id: string
+  orderId: string
+  containerTypeId: string
+  quantity: number
+  unitPrice: number
+  lineTotal: number
+}
+
+export interface QrCode {
+  id: string
+  stationLocationId: string
+  code: string
+  isActive: boolean
+}
+
+export type WaterStationTenant = Station
+export type WaterProduct = ContainerType
+export type WaterOrder = Order
