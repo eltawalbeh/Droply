@@ -25,6 +25,10 @@ import { ResourcePage } from '../pages/station-admin/ResourcePage'
 import { StationSettingsPage } from '../pages/station-admin/Settings'
 import { StationQrCodesPage } from '../pages/station-admin/QrCodes'
 import { StationPaymentsPage } from '../pages/station-admin/Payments'
+import { PlatformAdminLayout } from '../components/layouts/PlatformAdminLayout'
+import { PlatformOverview } from '../pages/platform-admin/Overview'
+import { PlatformStations } from '../pages/platform-admin/Stations'
+import { PlatformUsers } from '../pages/platform-admin/Users'
 
 export const router = createBrowserRouter([
   { path: '/', element: <Navigate to="/customer" replace /> },
@@ -64,6 +68,20 @@ export const router = createBrowserRouter([
       { path: 'profile', element: <DriverProfile /> },
       { path: 'orders/:orderId', element: <DriverOrderDetails /> },
       { path: 'orders/:orderId/complete', element: <CompleteDelivery /> },
+    ],
+  },
+
+  {
+    path: '/platform-admin',
+    element: (
+      <RequireRole roles={['platform_admin']}>
+        <PlatformAdminLayout />
+      </RequireRole>
+    ),
+    children: [
+      { index: true, element: <PlatformOverview /> },
+      { path: 'stations', element: <PlatformStations /> },
+      { path: 'users', element: <PlatformUsers /> },
     ],
   },
 
