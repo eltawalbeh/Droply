@@ -23,6 +23,7 @@ import { DriverProfile } from '../pages/driver/Profile'
 import { StationDashboard } from '../pages/station-admin/Dashboard'
 import { ResourcePage } from '../pages/station-admin/ResourcePage'
 import { StationSettingsPage } from '../pages/station-admin/Settings'
+import { StationQrCodesPage } from '../pages/station-admin/QrCodes'
 
 export const router = createBrowserRouter([
   { path: '/', element: <Navigate to="/customer" replace /> },
@@ -94,10 +95,7 @@ export const router = createBrowserRouter([
         path: 'locations',
         element: <ResourcePage title="Locations" description="Station branches, contact information and operating configuration." searchPlaceholder="Search location" filters={['Status']} emptyTitle="No locations yet" emptyDescription="Station locations will appear here." />,
       },
-      {
-        path: 'qr-codes',
-        element: <ResourcePage title="QR Codes" description="Location-linked QR codes used for registration and attribution." searchPlaceholder="Search QR reference" filters={['Location', 'Status']} emptyTitle="No QR codes yet" emptyDescription="Generated station/location QR codes will appear here." />,
-      },
+      { path: 'qr-codes', element: <StationQrCodesPage /> },
       {
         path: 'payments',
         element: <ResourcePage title="Payments" description="Cash, CliQ, coupon and pending payment records." searchPlaceholder="Search order or customer" filters={['Method', 'Status', 'Driver']} emptyTitle="No payment records yet" emptyDescription="Live payment records will appear here." />,

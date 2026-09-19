@@ -19,9 +19,7 @@ export function QRLanding() {
   if (isLoading) {
     return (
       <div className="grid min-h-screen place-items-center bg-slate-50 px-5">
-        <div className="w-full max-w-md">
-          <LoadingState label="Checking station QR…" />
-        </div>
+        <div className="w-full max-w-md"><LoadingState label="Checking station QR…" /></div>
       </div>
     )
   }
@@ -36,6 +34,10 @@ export function QRLanding() {
     )
   }
 
+  const registerUrl =
+    `/customer/register?qr=${encodeURIComponent(data.qrCode.code)}` +
+    (data.scanId ? `&scan=${encodeURIComponent(data.scanId)}` : '')
+
   return (
     <div className="grid min-h-screen place-items-center bg-slate-50 px-5">
       <div className="w-full max-w-md rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
@@ -48,15 +50,15 @@ export function QRLanding() {
           {data.station.name}
         </h1>
         <p className="mt-3 text-sm leading-6 text-slate-500">
-          Scan complete. This station and location are now identified, so you do not need to choose them manually.
+          Your water station is already identified. Set up delivery once, then future orders are only a few taps.
         </p>
 
-        <Link
-          to={`/customer/register?qr=${encodeURIComponent(data.qrCode.code)}`}
-          className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl bg-slate-950 px-4 py-3 text-sm font-semibold text-white"
-        >
-          Continue
+        <Link to={registerUrl} className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl bg-slate-950 px-4 py-3 text-sm font-semibold text-white">
+          New customer
           <ArrowRight size={17} />
+        </Link>
+        <Link to={`/customer/login?qr=${encodeURIComponent(data.qrCode.code)}`} className="mt-3 block text-center text-sm font-medium text-slate-600">
+          I already have an account
         </Link>
       </div>
     </div>

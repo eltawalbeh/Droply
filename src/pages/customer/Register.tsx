@@ -1,32 +1,86 @@
+import { LocateFixed } from 'lucide-react'
 import { useMemo, useState } from 'react'
-import { Link, useSearchParams } from 'react-router'
+import { useNavigate, useSearchParams } from 'react-router'
+import { useCustomerOnboarding } from '../../context/CustomerOnboardingContext'
+import { useApiData } from '../../hooks/useApiData'
+import { droplyApi } from '../../services/droply-api'
 
 export function CustomerRegister() {
+  const navigate = useNavigate()
+  const { setDraft } = useCustomerOnboarding()
   const [params] = useSearchParams()
   const qr = params.get('qr')
+  const scanId = params.get('scan')
+  const { data: qrData } = useApiData(
+    () => {
+      if (!qr) return Promise.reject(new Error('Missing station QR context'))
+      return droplyApi.resolveQr(qr, false)
+    },
+    [qr],
+  )
   const [phone, setPhone] = useState('')
-  const [name, setName] = useState('')
-  const [address, setAddress] = useState('')
+  const [fullName, setFullName] = useState('')
+  const [addressText, setAddressText] = useState('')
+  const [notes, setNotes] = useState('')
   const [pin, setPin] = useState('')
+  const [serviceAreaId, setServiceAreaId] = useState('')
+  const [latitude, setLatitude] = useState<number | null>(null)
+  const [longitude, setLongitude] = useState<number | null>(null)
+  const [locationMessage, setLocationMessage] = useState<string | null>(null)
 
   const canContinue = useMemo(
     () =>
       Boolean(qr) &&
       phone.trim().length >= 8 &&
-      name.trim().length >= 2 &&
-      address.trim().length >= 4 &&
-      pin.length === 6,
-    [qr, phone, name, address, pin],
+      fullName.trim().length >= 2 &&
+      addressText.trim().length >= 4 &&
+      pin.length === 6 &&
+      (!qrData?.serviceAreas.length || Boolean(serviceAreaId)),
+    [qr, phone, fullName, addressText, pin, qrData?.serviceAreas.length, serviceAreaId],
   )
+
+  function captureLocation() {
+    if (!navigator.geolocation) {
+      setLocationMessage('Location is not supported by this browser.')
+      return
+    }
+
+    setLocationMessage('Getting your location…')
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setLatitude(position.coords.latitude)
+        setLongitude(position.coords.longitude)
+        setLocationMessage('Delivery location saved.')
+      },
+      () => setLocationMessage('Could not access your location. You can continue with the written address.'),
+      { enableHighAccuracy: true, timeout: 10000 },
+    )
+  }
+
+  function continueFlow() {
+    if (!canContinue || !qr) return
+
+    setDraft({
+      qrCode: qr,
+      scanId,
+      phone: phone.trim(),
+      fullName: fullName.trim(),
+      addressText: addressText.trim(),
+      pin,
+      latitude,
+      longitude,
+      notes: notes.trim() || null,
+      serviceAreaId: serviceAreaId || null,
+    })
+
+    navigate(`/customer/containers?qr=${encodeURIComponent(qr)}`)
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 px-4 py-8">
       <div className="mx-auto w-full max-w-md rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
         <p className="text-sm font-medium text-slate-500">Create your Droply account</p>
         <h1 className="mt-1 text-2xl font-semibold text-slate-950">Set up delivery once.</h1>
-        <p className="mt-2 text-sm leading-6 text-slate-500">
-          Registration saving and secure PIN hashing are activated in the authentication phase. No raw PIN is stored in this screen.
-        </p>
 
         <div className="mt-6 grid gap-4">
           <label className="grid gap-1.5 text-sm font-medium text-slate-700">
@@ -36,12 +90,39 @@ export function CustomerRegister() {
 
           <label className="grid gap-1.5 text-sm font-medium text-slate-700">
             Name
-            <input value={name} onChange={(e) => setName(e.target.value)} className="rounded-xl border border-slate-300 px-3 py-3 outline-none focus:border-slate-950" />
+            <input value={fullName} onChange={(e) => setFullName(e.target.value)} className="rounded-xl border border-slate-300 px-3 py-3 outline-none focus:border-slate-950" />
           </label>
 
           <label className="grid gap-1.5 text-sm font-medium text-slate-700">
             Delivery address
-            <textarea value={address} onChange={(e) => setAddress(e.target.value)} className="min-h-24 rounded-xl border border-slate-300 px-3 py-3 outline-none focus:border-slate-950" placeholder="Area, street, building or landmark" />
+            <textarea value={addressText} onChange={(e) => setAddressText(e.target.value)} className="min-h-24 rounded-xl border border-slate-300 px-3 py-3 outline-none focus:border-slate-950" placeholder="Area, street, building or landmark" />
+          </label>
+
+          <button type="button" onClick={captureLocation} className="flex items-center justify-center gap-2 rounded-xl border border-slate-300 px-4 py-3 text-sm font-medium text-slate-700">
+            <LocateFixed size={17} />
+            Use current location
+          </button>
+          {locationMessage ? <p className="text-xs text-slate-500">{locationMessage}</p> : null}
+
+          {qrData?.serviceAreas.length ? (
+            <label className="grid gap-1.5 text-sm font-medium text-slate-700">
+              Delivery area
+              <select
+                value={serviceAreaId}
+                onChange={(e) => setServiceAreaId(e.target.value)}
+                className="rounded-xl border border-slate-300 px-3 py-3 outline-none focus:border-slate-950"
+              >
+                <option value="">Select your area</option>
+                {qrData.serviceAreas.map((area) => (
+                  <option key={area.id} value={area.id}>{area.name}</option>
+                ))}
+              </select>
+            </label>
+          ) : null}
+
+          <label className="grid gap-1.5 text-sm font-medium text-slate-700">
+            Delivery notes
+            <input value={notes} onChange={(e) => setNotes(e.target.value)} className="rounded-xl border border-slate-300 px-3 py-3 outline-none focus:border-slate-950" placeholder="Apartment, floor, landmark…" />
           </label>
 
           <label className="grid gap-1.5 text-sm font-medium text-slate-700">
@@ -50,16 +131,9 @@ export function CustomerRegister() {
           </label>
         </div>
 
-        <Link
-          to={canContinue ? `/customer/containers?qr=${encodeURIComponent(qr!)}` : '#'}
-          aria-disabled={!canContinue}
-          className={[
-            'mt-6 block rounded-xl px-4 py-3 text-center text-sm font-semibold',
-            canContinue ? 'bg-slate-950 text-white' : 'pointer-events-none bg-slate-200 text-slate-400',
-          ].join(' ')}
-        >
+        <button onClick={continueFlow} disabled={!canContinue} className="mt-6 w-full rounded-xl bg-slate-950 px-4 py-3 text-sm font-semibold text-white disabled:bg-slate-200 disabled:text-slate-400">
           Continue to your containers
-        </Link>
+        </button>
       </div>
     </div>
   )
