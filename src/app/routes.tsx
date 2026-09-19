@@ -24,6 +24,7 @@ import { StationDashboard } from '../pages/station-admin/Dashboard'
 import { ResourcePage } from '../pages/station-admin/ResourcePage'
 import { StationSettingsPage } from '../pages/station-admin/Settings'
 import { StationQrCodesPage } from '../pages/station-admin/QrCodes'
+import { StationPaymentsPage } from '../pages/station-admin/Payments'
 
 export const router = createBrowserRouter([
   { path: '/', element: <Navigate to="/customer" replace /> },
@@ -96,10 +97,7 @@ export const router = createBrowserRouter([
         element: <ResourcePage title="Locations" description="Station branches, contact information and operating configuration." searchPlaceholder="Search location" filters={['Status']} emptyTitle="No locations yet" emptyDescription="Station locations will appear here." />,
       },
       { path: 'qr-codes', element: <StationQrCodesPage /> },
-      {
-        path: 'payments',
-        element: <ResourcePage title="Payments" description="Cash, CliQ, coupon and pending payment records." searchPlaceholder="Search order or customer" filters={['Method', 'Status', 'Driver']} emptyTitle="No payment records yet" emptyDescription="Live payment records will appear here." />,
-      },
+      { path: 'payments', element: <StationPaymentsPage /> },
       {
         path: 'reports',
         element: <ResourcePage title="Reports" description="Operational reporting based only on live station data." searchPlaceholder="Search report" filters={['Date Range', 'Driver', 'Area']} emptyTitle="No report data yet" emptyDescription="Reports will populate when operational data exists." />,
