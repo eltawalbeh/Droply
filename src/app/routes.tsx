@@ -29,6 +29,12 @@ import { PlatformAdminLayout } from '../components/layouts/PlatformAdminLayout'
 import { PlatformOverview } from '../pages/platform-admin/Overview'
 import { PlatformStations } from '../pages/platform-admin/Stations'
 import { PlatformUsers } from '../pages/platform-admin/Users'
+import { StationOrdersPage } from '../pages/station-admin/Orders'
+import { StationCustomersPage } from '../pages/station-admin/Customers'
+import { StationDriversPage } from '../pages/station-admin/Drivers'
+import { StationServiceAreasPage } from '../pages/station-admin/ServiceAreas'
+import { StationLocationsPage } from '../pages/station-admin/Locations'
+import { StationReportsPage } from '../pages/station-admin/Reports'
 
 export const router = createBrowserRouter([
   { path: '/', element: <Navigate to="/customer" replace /> },
@@ -94,32 +100,14 @@ export const router = createBrowserRouter([
     ),
     children: [
       { index: true, element: <StationDashboard /> },
-      {
-        path: 'orders',
-        element: <ResourcePage title="Orders" description="Manage incoming and active deliveries." searchPlaceholder="Search order or customer" filters={['Status', 'Driver', 'Area', 'Payment']} emptyTitle="No orders yet" emptyDescription="Live customer orders will appear here." />,
-      },
-      {
-        path: 'customers',
-        element: <ResourcePage title="Customers" description="Customers registered through this station and its QR codes." searchPlaceholder="Search name or mobile" filters={['Area', 'Status']} emptyTitle="No customers yet" emptyDescription="Registered customers will appear here." />,
-      },
-      {
-        path: 'drivers',
-        element: <ResourcePage title="Drivers" description="Drivers and their assigned service areas." searchPlaceholder="Search driver" filters={['Status', 'Area']} emptyTitle="No drivers yet" emptyDescription="Station drivers will appear here after live data is connected." />,
-      },
-      {
-        path: 'service-areas',
-        element: <ResourcePage title="Service Areas" description="Geographic areas used to route orders to the correct driver." searchPlaceholder="Search area" filters={['Location', 'Driver']} emptyTitle="No service areas yet" emptyDescription="Configured delivery areas will appear here." />,
-      },
-      {
-        path: 'locations',
-        element: <ResourcePage title="Locations" description="Station branches, contact information and operating configuration." searchPlaceholder="Search location" filters={['Status']} emptyTitle="No locations yet" emptyDescription="Station locations will appear here." />,
-      },
+      { path: 'orders', element: <StationOrdersPage /> },
+      { path: 'customers', element: <StationCustomersPage /> },
+      { path: 'drivers', element: <StationDriversPage /> },
+      { path: 'service-areas', element: <StationServiceAreasPage /> },
+      { path: 'locations', element: <StationLocationsPage /> },
       { path: 'qr-codes', element: <StationQrCodesPage /> },
       { path: 'payments', element: <StationPaymentsPage /> },
-      {
-        path: 'reports',
-        element: <ResourcePage title="Reports" description="Operational reporting based only on live station data." searchPlaceholder="Search report" filters={['Date Range', 'Driver', 'Area']} emptyTitle="No report data yet" emptyDescription="Reports will populate when operational data exists." />,
-      },
+      { path: 'reports', element: <StationReportsPage /> },
       { path: 'settings', element: <StationSettingsPage /> },
     ],
   },
