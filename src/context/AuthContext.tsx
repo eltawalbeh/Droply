@@ -6,8 +6,10 @@ export interface AuthUser {
   id: string
   role: UserRole
   stationId?: string | null
+  driverId?: string | null
   fullName?: string | null
   phone?: string | null
+  email?: string | null
 }
 
 interface AuthContextValue {
@@ -15,10 +17,39 @@ interface AuthContextValue {
   role: UserRole | null
   isAuthenticated: boolean
   isLoading: boolean
+  signIn: (email: string, password: string) => Promise<AuthUser>
   logout: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined)
+
+function mapUser(user: {
+  id: string
+  email?: string | null
+  phone?: string | null
+  app_metadata?: Record<string, unknown>
+  user_metadata?: Record<string, unknown>
+}): AuthUser {
+  const app = user.app_metadata ?? {}
+  const role = app.role as UserRole | undefined
+
+  if (!role || !['platform_admin', 'station_admin', 'station_staff', 'driver'].includes(role)) {
+    throw new Error('This account does not have a Droply internal role.')
+  }
+
+  return {
+    id: user.id,
+    role,
+    stationId: typeof app.station_id === 'string' ? app.station_id : null,
+    driverId: typeof app.driver_id === 'string' ? app.driver_id : null,
+    fullName:
+      typeof user.user_metadata?.full_name === 'string'
+        ? user.user_metadata.full_name
+        : null,
+    phone: user.phone ?? null,
+    email: user.email ?? null,
+  }
+}
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null)
@@ -27,45 +58,39 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     let mounted = true
 
-    supabase.auth.getSession().then(({ data }) => {
+    supabase.auth.getUser().then(({ data, error }) => {
       if (!mounted) return
 
-      const sessionUser = data.session?.user
-
-      if (!sessionUser) {
+      if (error || !data.user) {
         setUser(null)
-        setIsLoading(false)
-        return
+      } else {
+        try {
+          setUser(mapUser(data.user))
+        } catch {
+          setUser(null)
+        }
       }
 
-      setUser({
-        id: sessionUser.id,
-        role: (sessionUser.user_metadata?.role as UserRole | undefined) ?? 'customer',
-        stationId: sessionUser.user_metadata?.station_id ?? null,
-        fullName: sessionUser.user_metadata?.full_name ?? null,
-        phone: sessionUser.phone ?? null,
-      })
       setIsLoading(false)
     })
 
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
-      const sessionUser = session?.user
+      if (!mounted) return
 
-      if (!sessionUser) {
+      if (!session?.user) {
         setUser(null)
         setIsLoading(false)
         return
       }
 
-      setUser({
-        id: sessionUser.id,
-        role: (sessionUser.user_metadata?.role as UserRole | undefined) ?? 'customer',
-        stationId: sessionUser.user_metadata?.station_id ?? null,
-        fullName: sessionUser.user_metadata?.full_name ?? null,
-        phone: sessionUser.phone ?? null,
-      })
+      try {
+        setUser(mapUser(session.user))
+      } catch {
+        setUser(null)
+      }
+
       setIsLoading(false)
     })
 
@@ -81,8 +106,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       role: user?.role ?? null,
       isAuthenticated: Boolean(user),
       isLoading,
+      signIn: async (email, password) => {
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password })
+
+        if (error || !data.user) {
+          throw new Error(error?.message || 'Unable to sign in')
+        }
+
+        const mapped = mapUser(data.user)
+        setUser(mapped)
+        return mapped
+      },
       logout: async () => {
         await supabase.auth.signOut()
+        setUser(null)
       },
     }),
     [user, isLoading],

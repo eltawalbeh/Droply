@@ -1,13 +1,19 @@
 import { createBrowserRouter, Navigate } from 'react-router'
+import { RequireCustomerSession } from '../components/auth/RequireCustomerSession'
+import { RequireRole } from '../components/auth/RequireRole'
 import { CustomerLayout } from '../components/layouts/CustomerLayout'
 import { DashboardLayout } from '../components/layouts/DashboardLayout'
 import { DriverLayout } from '../components/layouts/DriverLayout'
+import { LoginPage } from '../pages/auth/LoginPage'
+import { UnauthorizedPage } from '../pages/auth/UnauthorizedPage'
 import { QRLanding } from '../pages/customer/QRLanding'
 import { CustomerRegister } from '../pages/customer/Register'
 import { CustomerContainers } from '../pages/customer/Containers'
 import { CustomerHome } from '../pages/customer/Home'
 import { CustomerOrders } from '../pages/customer/Orders'
 import { CustomerProfile } from '../pages/customer/Profile'
+import { CustomerLogin } from '../pages/customer/Login'
+import { CustomerRecovery } from '../pages/customer/Recovery'
 import { DriverToday } from '../pages/driver/Today'
 import { DriverActive } from '../pages/driver/Active'
 import { DriverCompleted } from '../pages/driver/Completed'
@@ -20,13 +26,21 @@ import { StationSettingsPage } from '../pages/station-admin/Settings'
 
 export const router = createBrowserRouter([
   { path: '/', element: <Navigate to="/customer" replace /> },
+  { path: '/login', element: <LoginPage /> },
+  { path: '/unauthorized', element: <UnauthorizedPage /> },
 
   { path: '/join/:code', element: <QRLanding /> },
+  { path: '/customer/login', element: <CustomerLogin /> },
+  { path: '/customer/recovery', element: <CustomerRecovery /> },
   { path: '/customer/register', element: <CustomerRegister /> },
   { path: '/customer/containers', element: <CustomerContainers /> },
   {
     path: '/customer',
-    element: <CustomerLayout />,
+    element: (
+      <RequireCustomerSession>
+        <CustomerLayout />
+      </RequireCustomerSession>
+    ),
     children: [
       { index: true, element: <CustomerHome /> },
       { path: 'orders', element: <CustomerOrders /> },
@@ -36,7 +50,11 @@ export const router = createBrowserRouter([
 
   {
     path: '/driver',
-    element: <DriverLayout />,
+    element: (
+      <RequireRole roles={['driver']}>
+        <DriverLayout />
+      </RequireRole>
+    ),
     children: [
       { index: true, element: <DriverToday /> },
       { path: 'active', element: <DriverActive /> },
@@ -49,7 +67,11 @@ export const router = createBrowserRouter([
 
   {
     path: '/station-admin',
-    element: <DashboardLayout />,
+    element: (
+      <RequireRole roles={['station_admin', 'station_staff']}>
+        <DashboardLayout />
+      </RequireRole>
+    ),
     children: [
       { index: true, element: <StationDashboard /> },
       {
