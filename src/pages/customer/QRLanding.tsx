@@ -53,9 +53,13 @@ export function QRLanding() {
           Your water station is already identified. Set up delivery once, then future orders are only a few taps.
         </p>
 
-        <Link to={registerUrl} className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl bg-slate-950 px-4 py-3 text-sm font-semibold text-white">
-          New customer
-          <ArrowRight size={17} />
+        <Link
+          to={registerUrl}
+          className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl bg-slate-950 px-4 py-3 text-sm font-semibold"
+          style={{ color: '#ffffff' }}
+        >
+          <span style={{ color: '#ffffff' }}>New customer</span>
+          <ArrowRight size={17} color="#ffffff" />
         </Link>
         <Link to={`/customer/login?qr=${encodeURIComponent(data.qrCode.code)}`} className="mt-3 block text-center text-sm font-medium text-slate-600">
           I already have an account
